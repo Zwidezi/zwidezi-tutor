@@ -15,7 +15,7 @@ const App: React.FC = () => {
   const tutorRef = useRef<TutorService | null>(null);
 
   // Configuration for your WhatsApp bot
-  const BOT_PHONE_NUMBER = "+27123456789"; 
+  const BOT_PHONE_NUMBER = "+27658396392"; 
 
   const handleSelect = async (g: Grade, s: Subject, sync: WhatsAppSync) => {
     setGrade(g);
