@@ -38,7 +38,12 @@ export class TutorService {
   private chat: Chat | null = null;
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+    // Use Vite's environment variable standard
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+    if (!apiKey) {
+      console.error('VITE_GEMINI_API_KEY is not set in environment variables');
+    }
+    this.ai = new GoogleGenAI({ apiKey });
   }
 
   async startChat(grade: Grade, subject: Subject) {
