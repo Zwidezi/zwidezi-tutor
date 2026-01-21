@@ -11,8 +11,8 @@ An AI-powered tutoring application designed for South African students, featurin
 - 📚 Grade-specific curriculum (Grades 8-12)
 - 🤖 AI-powered tutoring using Google Gemini
 - 💬 Interactive chat interface with streaming responses
-- 📱 WhatsApp bot integration
-- 🇿🇦 South African curriculum aligned
+- 📱 WhatsApp bot integration ready
+- 🇿🇦 South African CAPS curriculum aligned
 - 🎨 Beautiful UI with Tailwind CSS
 
 ## 🚀 Quick Start
@@ -20,9 +20,30 @@ An AI-powered tutoring application designed for South African students, featurin
 ### Prerequisites
 
 - **Node.js** (v18 or higher recommended)
-- **Gemini API Key** - [Get one here](https://makersuite.google.com/app/apikey)
+- **Free Gemini API Key** - See instructions below 👇
 
-### Installation
+### 🔑 Getting Your FREE Gemini API Key
+
+**Google Gemini offers a generous FREE tier:**
+- ✅ No credit card required
+- ✅ 1,500 requests per day
+- ✅ Perfect for testing and small deployments
+
+**Steps to get your key:**
+
+1. **Go to Google AI Studio**
+   - Visit: [https://aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+   - Or: [https://ai.google.dev](https://ai.google.dev) → Click "Get API Key"
+
+2. **Sign in with your Google account**
+
+3. **Click "Create API Key"**
+   - Select "Create API key in new project" or use existing project
+   - Copy the key (looks like: `AIzaSy...`)
+
+4. **Keep it safe!** You'll need it in the next step
+
+### 📦 Installation
 
 1. **Clone the repository**
    ```bash
@@ -35,16 +56,16 @@ An AI-powered tutoring application designed for South African students, featurin
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Set up your API key**
    
-   Copy the example environment file:
+   Copy the example file:
    ```bash
    cp .env.example .env.local
    ```
    
-   Then edit `.env.local` and add your Gemini API key:
+   Edit `.env.local` and paste your key:
    ```env
-   GEMINI_API_KEY=your_actual_gemini_api_key_here
+   VITE_GEMINI_API_KEY=AIzaSy...your_actual_key_here
    ```
 
 4. **Run the development server**
@@ -52,16 +73,68 @@ An AI-powered tutoring application designed for South African students, featurin
    npm run dev
    ```
 
-5. **Open your browser**
+5. **Open your browser** 🎉
    
-   Navigate to the URL shown in your terminal (usually `http://localhost:5173`)
+   Navigate to `http://localhost:5173`
 
-## 🏗️ Build for Production
+## 🌐 Deploy to Production
 
-```bash
-npm run build
-npm run preview
-```
+### Deploy to Vercel (Recommended - FREE)
+
+1. **Install Vercel CLI**
+   ```bash
+   npm i -g vercel
+   ```
+
+2. **Deploy**
+   ```bash
+   vercel
+   ```
+
+3. **Add your API key to Vercel**
+   ```bash
+   vercel env add VITE_GEMINI_API_KEY
+   ```
+   Paste your Gemini API key when prompted
+
+4. **Deploy again**
+   ```bash
+   vercel --prod
+   ```
+
+### Alternative: Deploy to Netlify
+
+1. **Build the app**
+   ```bash
+   npm run build
+   ```
+
+2. **Install Netlify CLI**
+   ```bash
+   npm i -g netlify-cli
+   ```
+
+3. **Deploy**
+   ```bash
+   netlify deploy --prod
+   ```
+
+4. **Set environment variable**
+   - Go to Netlify dashboard
+   - Site settings → Environment variables
+   - Add `VITE_GEMINI_API_KEY` with your key
+
+## 💰 API Costs & Limits
+
+**Gemini FREE Tier:**
+- 15 requests per minute
+- 1,500 requests per day
+- 1 million requests per month
+- **Perfect for:** Testing, small schools (up to ~50 active students/day)
+
+**If you need more:**
+- Consider paid tier (~$0.001 per request)
+- Or switch to alternatives like Groq (free, 14,400/day)
 
 ## 🔧 Configuration
 
@@ -69,11 +142,15 @@ npm run preview
 
 The WhatsApp bot number is configured in `App.tsx`:
 - Current number: `+27658396392`
-- To change it, edit the `BOT_PHONE_NUMBER` constant in `App.tsx`
+- To change it, edit the `BOT_PHONE_NUMBER` constant
+- **Note:** WhatsApp sync opens wa.me link - you need a real bot backend to receive messages
 
 ### Tailwind CSS
 
 Custom South African flag colors are available:
+```tsx
+className="bg-sa-green text-sa-gold"
+```
 - `sa-green`: #007A4D
 - `sa-gold`: #FFB612
 - `sa-red`: #DE3831
@@ -106,7 +183,7 @@ zwidezi-tutor/
 - **TypeScript** - Type safety
 - **Vite** - Build tool
 - **Tailwind CSS** - Styling
-- **Google Gemini** - AI tutoring
+- **Google Gemini** - AI tutoring (gemini-3-flash-preview)
 
 ## 📝 Usage
 
@@ -114,6 +191,29 @@ zwidezi-tutor/
 2. Choose a subject (Math, Science, English, etc.)
 3. Optionally enable WhatsApp sync
 4. Start chatting with your AI tutor!
+
+**Student can ask:**
+- "Explain [topic]"
+- "Give me practice questions"
+- "Test me on [topic]"
+- "Help me study for [exam]"
+- "Summarise [topic]"
+
+## 🐛 Troubleshooting
+
+**App won't start?**
+- Make sure you ran `npm install`
+- Check Node.js version: `node --version` (need v18+)
+
+**AI not responding?**
+- Check `.env.local` exists and has correct key
+- Verify key at [https://aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+- Check browser console for errors
+
+**Styles not working?**
+- Run `npm install` again
+- Clear browser cache
+- Try `npm run build` and `npm run preview`
 
 ## 🤝 Contributing
 
@@ -125,9 +225,10 @@ This project is private and for educational purposes.
 
 ## 🔗 Links
 
-- View app in AI Studio: https://ai.studio/apps/drive/1nzkbko8EkBJKY01-P3YHPIJB5EwCvk-i
-- Get Gemini API Key: https://makersuite.google.com/app/apikey
+- **Get FREE Gemini API Key:** [https://aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+- **View in AI Studio:** [https://ai.studio/apps/drive/1nzkbko8EkBJKY01-P3YHPIJB5EwCvk-i](https://ai.studio/apps/drive/1nzkbko8EkBJKY01-P3YHPIJB5EwCvk-i)
+- **Gemini API Docs:** [https://ai.google.dev/docs](https://ai.google.dev/docs)
 
 ---
 
-Made with 💚 for South African students
+Made with 💚 for South African students | **FREE** to use with Gemini's generous free tier!
