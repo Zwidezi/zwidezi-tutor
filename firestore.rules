@@ -1,0 +1,66 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      allow create: if isSignedIn() 
+        && isOwner(userId)
+        && request.resource.data.role == 'student'
+        && request.resource.data.plan == 'free';
+      
+      allow update: if isAdmin();
+      
+      allow update: if isSignedIn()
+        && isOwner(userId)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.stats.dailyLimit == resource.data.stats.dailyLimit;
+      
+      allow delete: if isAdmin();
+    }
+    
+    // Posts collection
+    match /posts/{postId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    
+    // Comments collection
+    match /comments/{commentId} {
+      allow read: if isSignedIn();
+      
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+      
+      allow update, delete: if isSignedIn()
+        && request.auth.uid == resource.data.userId;
+    }
+    
+    // Sessions collection
+    match /sessions/{sessionId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      
+      match /messages/{messageId} {
+        allow read: if isSignedIn() && get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+        allow create: if isSignedIn() && get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+      }
+    }
+  }
+}
