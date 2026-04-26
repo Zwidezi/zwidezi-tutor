@@ -761,6 +761,358 @@ export const QUIZZES: Quiz[] = [
         marks: 1
       }
     ]
+  },
+  {
+    id: 'algebra-grade10',
+    title: 'Algebraic Expressions',
+    topic: 'Algebraic Expressions',
+    subject: 'Mathematics',
+    grade: '10',
+    questions: [
+      {
+        id: 'alg10-1',
+        question: 'Expand: (x + 3)(x - 2)',
+        options: ['x² + x - 6', 'x² - x - 6', 'x² + 5x - 6', 'x² - 5x - 6'],
+        correctAnswer: 0,
+        explanation: '(x+3)(x-2) = x² - 2x + 3x - 6 = x² + x - 6',
+        marks: 2
+      },
+      {
+        id: 'alg10-2',
+        question: 'Factorize: x² - 9',
+        options: ['(x-3)(x-3)', '(x+3)(x-3)', '(x+3)(x+3)', '(x-9)(x+1)'],
+        correctAnswer: 1,
+        explanation: 'x² - 9 is a difference of squares: (x+3)(x-3)',
+        marks: 1
+      },
+      {
+        id: 'alg10-3',
+        question: 'Factorize: x² + 5x + 6',
+        options: ['(x+1)(x+6)', '(x+2)(x+3)', '(x-2)(x-3)', '(x+6)(x-1)'],
+        correctAnswer: 1,
+        explanation: 'Find two numbers that multiply to 6 and add to 5: 2 and 3',
+        marks: 2
+      },
+      {
+        id: 'alg10-4',
+        question: 'Simplify: 3x + 5x - 2x',
+        options: ['6x', '10x', '8x', '5x'],
+        correctAnswer: 0,
+        explanation: '3 + 5 - 2 = 6, so 6x',
+        marks: 1
+      },
+      {
+        id: 'alg10-5',
+        question: 'Expand: (2x - 1)²',
+        options: ['4x² - 4x + 1', '4x² + 4x + 1', '4x² - 1', '2x² - 2x + 1'],
+        correctAnswer: 0,
+        explanation: '(2x-1)² = (2x-1)(2x-1) = 4x² - 2x - 2x + 1 = 4x² - 4x + 1',
+        marks: 2
+      }
+    ]
+  },
+  {
+    id: 'functions-grade10',
+    title: 'Functions & Graphs',
+    topic: 'Functions',
+    subject: 'Mathematics',
+    grade: '10',
+    questions: [
+      {
+        id: 'func10-1',
+        question: 'What is the y-intercept of y = 2x + 3?',
+        options: ['2', '3', '-3', '0'],
+        correctAnswer: 1,
+        explanation: 'In y = mx + c form, c is the y-intercept. Here c = 3',
+        marks: 1
+      },
+      {
+        id: 'func10-2',
+        question: 'The gradient of the line 3x + y = 5 is:',
+        options: ['3', '-3', '5', '-5'],
+        correctAnswer: 1,
+        explanation: 'Rewrite as y = -3x + 5, so gradient = -3',
+        marks: 2
+      },
+      {
+        id: 'func10-3',
+        question: 'What type of graph is y = x²?',
+        options: ['Straight line', 'Parabola', 'Hyperbola', 'Circle'],
+        correctAnswer: 1,
+        explanation: 'y = x² is a quadratic function, graph is a parabola',
+        marks: 1
+      },
+      {
+        id: 'func10-4',
+        question: 'If y varies directly with x and y = 10 when x = 2, find y when x = 5.',
+        options: ['20', '25', '50', '4'],
+        correctAnswer: 1,
+        explanation: 'y = kx → 10 = k(2) → k = 5. So y = 5(5) = 25',
+        marks: 2
+      },
+      {
+        id: 'func10-5',
+        question: 'The point (0, 4) lies on which quadrant?',
+        options: ['First', 'Second', 'Third', 'None'],
+        correctAnswer: 3,
+        explanation: 'Points on axes do not lie in any quadrant. (0,4) is on the y-axis.',
+        marks: 1
+      }
+    ]
+  },
+  {
+    id: 'numbers-grade10',
+    title: 'Number Patterns',
+    topic: 'Number Patterns',
+    subject: 'Mathematics',
+    grade: '10',
+    questions: [
+      {
+        id: 'seq10-1',
+        question: 'What is the 10th term of the arithmetic sequence 2, 5, 8, ...?',
+        options: ['29', '30', '32', '28'],
+        correctAnswer: 0,
+        explanation: 'a = 2, d = 3. T₁₀ = 2 + (10-1)(3) = 2 + 27 = 29',
+        marks: 2
+      },
+      {
+        id: 'seq10-2',
+        question: 'Find the sum of the first 5 terms: 3, 6, 9, 12, 15',
+        options: ['40', '45', '50', '55'],
+        correctAnswer: 1,
+        explanation: 'Sum = n/2(first + last) = 5/2(3 + 15) = 5/2(18) = 45',
+        marks: 2
+      },
+      {
+        id: 'seq10-3',
+        question: 'What is the 5th term of 2, 4, 8, ... (geometric)?',
+        options: ['16', '32', '64', '12'],
+        correctAnswer: 1,
+        explanation: 'a = 2, r = 2. T₅ = 2 × 2⁴ = 2 × 16 = 32',
+        marks: 2
+      },
+      {
+        id: 'seq10-4',
+        question: 'The nth term of a sequence is 3n + 1. What is T₅?',
+        options: ['16', '15', '14', '17'],
+        correctAnswer: 0,
+        explanation: 'T₅ = 3(5) + 1 = 15 + 1 = 16',
+        marks: 1
+      },
+      {
+        id: 'seq10-5',
+        question: 'Is 0, 3, 6, 9,... arithmetic or geometric?',
+        options: ['Arithmetic', 'Geometric', 'Both', 'Neither'],
+        correctAnswer: 0,
+        explanation: 'Adding 3 each time: 3-0=3, 6-3=3 - this is arithmetic',
+        marks: 1
+      }
+    ]
+  },
+  {
+    id: 'derivatives-grade12',
+    title: 'Derivatives & Calculus',
+    topic: 'Differential Calculus',
+    subject: 'Mathematics',
+    grade: '12',
+    questions: [
+      {
+        id: 'deriv12-1',
+        question: 'Find dy/dx if y = x³',
+        options: ['x²', '3x²', '3x', 'x³'],
+        correctAnswer: 1,
+        explanation: 'Using power rule: d/dx[xⁿ] = nxⁿ⁻¹, so d/dx[x³] = 3x²',
+        marks: 1
+      },
+      {
+        id: 'deriv12-2',
+        question: 'Find the derivative of y = 2x⁵ - 3x² + 4x - 7',
+        options: ['10x⁴ - 6x + 4', '10x⁴ - 6x + 4 - 7', '2x⁵ - 3x² + 4x', '10x³ - 6x + 4'],
+        correctAnswer: 0,
+        explanation: 'dy/dx = 10x⁴ - 6x + 4',
+        marks: 2
+      },
+      {
+        id: 'deriv12-3',
+        question: 'Find f\'(2) if f(x) = x² + 3x',
+        options: ['7', '10', '4', '6'],
+        correctAnswer: 0,
+        explanation: 'f\'(x) = 2x + 3, so f\'(2) = 2(2) + 3 = 7',
+        marks: 2
+      },
+      {
+        id: 'deriv12-4',
+        question: 'Find the turning point of y = x² - 4x + 3',
+        options: ['(2, -1)', '(2, 1)', '(-2, -1)', '(-2, 1)'],
+        correctAnswer: 0,
+        explanation: 'dy/dx = 2x - 4 = 0 → x = 2. At x=2: y = 4 - 8 + 3 = -1',
+        marks: 3
+      }
+    ]
+  },
+  {
+    id: 'ecosystems-grade11',
+    title: 'Ecosystems & Energy',
+    topic: 'Ecosystems',
+    subject: 'Life Sciences',
+    grade: '11',
+    questions: [
+      {
+        id: 'eco11-1',
+        question: 'What is the source of energy in most ecosystems?',
+        options: ['Chemical energy', 'Sunlight', 'Heat', 'Wind'],
+        correctAnswer: 1,
+        explanation: 'Sunlight is the primary energy source for most ecosystems via photosynthesis',
+        marks: 1
+      },
+      {
+        id: 'eco11-2',
+        question: 'In a food chain, which organisms are producers?',
+        options: ['Herbivores', 'Carnivores', 'Autotrophs', 'Decomposers'],
+        correctAnswer: 2,
+        explanation: 'Producers (autotrophs) make their own food through photosynthesis',
+        marks: 1
+      },
+      {
+        id: 'eco11-3',
+        question: 'Approximately what percentage of energy is transferred between trophic levels?',
+        options: ['50%', '25%', '10%', '5%'],
+        correctAnswer: 2,
+        explanation: 'Only about 10% of energy is transferred to the next trophic level',
+        marks: 1
+      },
+      {
+        id: 'eco11-4',
+        question: 'Which biome is found in the Western Cape of South Africa?',
+        options: ['Savanna', 'Desert', 'Fynbos', 'Rainforest'],
+        correctAnswer: 2,
+        explanation: 'Fynbos is unique to the Cape region of South Africa',
+        marks: 1
+      },
+      {
+        id: 'eco11-5',
+        question: 'What is the role of decomposers in an ecosystem?',
+        options: ['Produce food', 'Break down dead material', 'Control populations', 'Regulate climate'],
+        correctAnswer: 1,
+        explanation: 'Decomposers break down dead organic matter, recycling nutrients',
+        marks: 1
+      }
+    ]
+  },
+  {
+    id: 'circles-grade12',
+    title: 'Circle Geometry',
+    topic: 'Euclidean Geometry',
+    subject: 'Mathematics',
+    grade: '12',
+    questions: [
+      {
+        id: 'circle12-1',
+        question: 'The angle at the centre of a circle is 80°. What is the angle at the circumference on the same arc?',
+        options: ['40°', '80°', '160°', '20°'],
+        correctAnswer: 0,
+        explanation: 'Angle at centre = 2 × angle at circumference, so 80°/2 = 40°',
+        marks: 2
+      },
+      {
+        id: 'circle12-2',
+        question: 'A tangent touches a circle at P. The radius through P is drawn. What is the angle between them?',
+        options: ['45°', '90°', '180°', '0°'],
+        correctAnswer: 1,
+        explanation: 'The radius is perpendicular to the tangent at the point of contact',
+        marks: 1
+      },
+      {
+        id: 'circle12-3',
+        question: 'In a cyclic quadrilateral ABCD, ∠A = 100°. What is ∠C?',
+        options: ['80°', '100°', '180°', '260°'],
+        correctAnswer: 0,
+        explanation: 'Opposite angles in cyclic quadrilateral sum to 180°, so ∠C = 180° - 100° = 80°',
+        marks: 2
+      }
+    ]
+  },
+  {
+    id: 'evolution-grade12',
+    title: 'Evolution & Natural Selection',
+    topic: 'Evolution',
+    subject: 'Life Sciences',
+    grade: '12',
+    questions: [
+      {
+        id: 'evo12-1',
+        question: 'Who proposed the theory of evolution by natural selection?',
+        options: ['Mendel', 'Darwin', 'Lamarck', 'Newton'],
+        correctAnswer: 1,
+        explanation: 'Charles Darwin proposed the theory of evolution by natural selection',
+        marks: 1
+      },
+      {
+        id: 'evo12-2',
+        question: 'Which is NOT evidence for evolution?',
+        options: ['Fossils', 'DNA', 'Radiation', 'Comparative anatomy'],
+        correctAnswer: 2,
+        explanation: 'Radiation is NOT evidence - fossils, DNA, and comparative anatomy are',
+        marks: 1
+      },
+      {
+        id: 'evo12-3',
+        question: 'What is natural selection?',
+        options: ['Random selection', 'Survival of the fittest', 'Artificial selection', 'Genetic drift'],
+        correctAnswer: 1,
+        explanation: 'Natural selection is survival of individuals best adapted to the environment',
+        marks: 1
+      },
+      {
+        id: 'evo12-4',
+        question: 'What must be true for speciation to occur?',
+        options: ['No reproduction', 'Geographic isolation', 'Same genes', 'No mutation'],
+        correctAnswer: 1,
+        explanation: 'Geographic isolation leads to reproductive isolation and speciation',
+        marks: 2
+      }
+    ]
+  },
+  {
+    id: 'electro-grade12',
+    title: 'Electric Circuits',
+    topic: 'Electrostatics',
+    subject: 'Physical Sciences',
+    grade: '12',
+    questions: [
+      {
+        id: 'elec12-1',
+        question: 'Ohm\'s Law states:',
+        options: ['V = IR', 'P = IV', 'R = P/I', 'I = P/V'],
+        correctAnswer: 0,
+        explanation: 'Ohm\'s Law: V = IR (Voltage = Current × Resistance)',
+        marks: 1
+      },
+      {
+        id: 'elec12-2',
+        question: 'Three 6Ω resistors are connected in parallel. What is the total resistance?',
+        options: ['18Ω', '6Ω', '2Ω', '3Ω'],
+        correctAnswer: 2,
+        explanation: '1/R = 1/6 + 1/6 + 1/6 = 3/6 = 1/2, so R = 2Ω',
+        marks: 2
+      },
+      {
+        id: 'elec12-3',
+        question: 'A 100W bulb is connected to 220V. What is the current?',
+        options: ['0.45A', '2.2A', '22A', '22000A'],
+        correctAnswer: 0,
+        explanation: 'I = P/V = 100/220 = 0.45A',
+        marks: 2
+      },
+      {
+        id: 'elec12-4',
+        question: 'In a series circuit, the current is:',
+        options: ['Divided', 'Same everywhere', 'Zero', 'Maximum'],
+        correctAnswer: 1,
+        explanation: 'In series, current is the same through all components',
+        marks: 1
+      }
+    ]
   }
 ];
 

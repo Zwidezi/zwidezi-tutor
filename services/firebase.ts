@@ -1,22 +1,23 @@
 import { initializeApp, getApp, getApps, FirebaseApp } from "firebase/app";
-import { 
-  getAuth, 
-  onAuthStateChanged, 
-  signOut, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   updateProfile,
+  deleteUser,
   Auth
 } from "firebase/auth";
-import { 
-  getFirestore, 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  collection, 
-  onSnapshot, 
-  query, 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection,
+  onSnapshot,
+  query,
   deleteDoc,
   Firestore,
   serverTimestamp,
@@ -45,9 +46,8 @@ export const auth: Auth = getAuth(app);
 export const db: Firestore = getFirestore(app);
 
 // Session functions
-export const createSession = async (sessionData: any) => {
-  const sessionsRef = collection(db, "sessions");
-  await addDoc(sessionsRef, {
+export const createSession = async (sessionId: string, sessionData: any) => {
+  await setDoc(doc(db, "sessions", sessionId), {
     ...sessionData,
     createdAt: serverTimestamp(),
     lastMessageAt: serverTimestamp()
@@ -92,19 +92,20 @@ export const subscribeToMessages = (sessionId: string, callback: (messages: any[
   });
 };
 
-export { 
-  onAuthStateChanged, 
-  signOut, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
+export {
+  onAuthStateChanged,
+  signOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   updateProfile,
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  collection, 
-  onSnapshot, 
-  query, 
+  deleteUser,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection,
+  onSnapshot,
+  query,
   deleteDoc,
   serverTimestamp,
   addDoc,

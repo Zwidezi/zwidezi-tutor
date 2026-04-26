@@ -33,7 +33,14 @@ interface Message {
 export class TutorService {
   private messages: Message[] = [];
 
-  constructor() {}
+  constructor() {
+    if (!import.meta.env.VITE_MINIMAX_API_KEY) {
+      throw new Error("VITE_MINIMAX_API_KEY is not configured. Please set it in your .env.local file.");
+    }
+    if (!import.meta.env.VITE_MINIMAX_GROUP_ID) {
+      throw new Error("VITE_MINIMAX_GROUP_ID is not configured. Please set it in your .env.local file.");
+    }
+  }
 
   async startChat(grade: Grade, subject: Subject) {
     this.messages = [
@@ -50,7 +57,7 @@ export class TutorService {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${import.meta.env.MINIMAX_API_KEY}`,
+          Authorization: `Bearer ${import.meta.env.VITE_MINIMAX_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -71,6 +78,7 @@ export class TutorService {
 
     const decoder = new TextDecoder();
     let buffer = "";
+    let fullResponse = "";
 
     while (true) {
       const { done, value } = await reader.read();
@@ -83,18 +91,29 @@ export class TutorService {
       for (const line of lines) {
         if (line.startsWith("data: ")) {
           const data = line.slice(6);
-          if (data === "[DONE]") return;
+          if (data === "[DONE]") {
+            // Push the complete response as a single message
+            if (fullResponse) {
+              this.messages.push({ role: "assistant", content: fullResponse });
+            }
+            return;
+          }
 
           try {
             const parsed = JSON.parse(data);
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
-              this.messages.push({ role: "assistant", content });
+              fullResponse += content;
               yield content;
             }
-          } catch {}
+          } catch { }
         }
       }
+    }
+
+    // Push the complete response if stream ended without [DONE]
+    if (fullResponse) {
+      this.messages.push({ role: "assistant", content: fullResponse });
     }
   }
 }

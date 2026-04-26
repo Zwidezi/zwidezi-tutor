@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { Message } from '../types.ts';
 
 interface ChatMessageProps {
@@ -15,6 +16,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
     window.open(url, '_blank');
   };
 
+  // Sanitize HTML to prevent XSS from AI-generated content
+  const sanitize = (html: string) => DOMPurify.sanitize(html, { ALLOWED_TAGS: ['strong', 'em', 'span', 'br'], ALLOWED_ATTR: ['class'] });
+
   const formatContent = (text: string) => {
     return text.split('\n').map((line, i) => {
       let formattedLine = line.replace(/\[(\d+)\]/g, '<span class="inline-flex items-center justify-center bg-green-100 text-green-800 text-[10px] font-black px-1.5 py-0.5 rounded ml-1">[$1 MARKS]</span>');
@@ -27,20 +31,20 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       if (formattedLine.trim().startsWith('- ') || formattedLine.trim().startsWith('* ')) {
         return (
           <li key={i} className="ml-6 list-disc mb-2 text-slate-700 font-medium" 
-              dangerouslySetInnerHTML={{ __html: formattedLine.replace(/^[-*]\s/, '') }} />
+              dangerouslySetInnerHTML={{ __html: sanitize(formattedLine.replace(/^[-*]\s/, '')) }} />
         );
       }
 
       if (formattedLine.includes('=') && formattedLine.length > 3) {
         return (
           <div key={i} className="my-2 p-3 bg-slate-50 border border-slate-100 rounded-xl font-mono text-sm overflow-x-auto whitespace-pre-wrap"
-               dangerouslySetInnerHTML={{ __html: formattedLine }} />
+               dangerouslySetInnerHTML={{ __html: sanitize(formattedLine) }} />
         );
       }
 
       if (!formattedLine.trim()) return <div key={i} className="h-3" />;
 
-      return <p key={i} className="mb-3 leading-relaxed text-slate-700 font-medium" dangerouslySetInnerHTML={{ __html: formattedLine }} />;
+      return <p key={i} className="mb-3 leading-relaxed text-slate-700 font-medium" dangerouslySetInnerHTML={{ __html: sanitize(formattedLine) }} />;
     });
   };
 

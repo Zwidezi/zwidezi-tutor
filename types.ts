@@ -29,9 +29,11 @@ export interface WhatsAppSync {
 
 export interface UsageStats {
   messagesSent: number;
+  totalMessages: number;
   dailyLimit: number;
   streakDays: number;
   lastActive: string;
+  badges: string[];
 }
 
 export interface User {
@@ -63,7 +65,7 @@ export interface LearningSession {
   curriculum: 'CAPS';
 }
 
-export type AppView = 'auth' | 'picker' | 'confirmation' | 'study' | 'upgrade' | 'admin';
+export type AppView = 'landing' | 'auth' | 'picker' | 'confirmation' | 'study' | 'upgrade' | 'admin' | 'profile' | 'library';
 
 export interface Resource {
   id: string;

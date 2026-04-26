@@ -1,62 +1,71 @@
-import React, { useState, ReactNode } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
 }
 
-export const ErrorBoundary: React.FC<Props> = ({ children, fallback }) => {
-  const [hasError, setHasError] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+interface State {
+  hasError: boolean;
+  error: Error | null;
+}
 
-  React.useEffect(() => {
-    const handleError = (err: Error) => {
-      setError(err);
-      setHasError(true);
-    };
-    
-    window.onerror = (message, source, lineno, colno, err) => {
-      if (err) handleError(err);
-    };
-    
-    window.onunhandledrejection = (event) => {
-      if (event.reason) handleError(event.reason);
-    };
-  }, []);
-
-  const handleRetry = () => {
-    setHasError(false);
-    setError(null);
-  };
-
-  if (hasError) {
-    if (fallback) return <>{fallback}</>;
-
-    return (
-      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white p-8 rounded-[2rem] shadow-xl border border-red-100 text-center">
-          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h1 className="text-xl font-black text-slate-900 mb-2">Eish, something went wrong!</h1>
-          <p className="text-sm text-slate-500 mb-6">
-            Don't worry, your learning progress is safe. Let's try again.
-          </p>
-          <button
-            onClick={handleRetry}
-            className="px-6 py-3 bg-green-600 text-white font-black rounded-xl hover:bg-green-700 transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+/**
+ * A proper React Error Boundary using class component lifecycle methods.
+ * This catches errors during rendering, in lifecycle methods, and in
+ * constructors of child components. It will NOT catch errors in:
+ * - Event handlers (use try/catch)
+ * - Async code (use try/catch)
+ * - Server-side rendering
+ */
+export class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false, error: null };
   }
 
-  return <>{children}</>;
-};
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+  }
+
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  render() {
+    if (this.state.hasError) {
+      if (this.props.fallback) return this.props.fallback;
+
+      return (
+        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white p-8 rounded-[2rem] shadow-xl border border-red-100 text-center">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h1 className="text-xl font-black text-slate-900 mb-2">Eish, something went wrong!</h1>
+            <p className="text-sm text-slate-500 mb-6">
+              Don't worry, your learning progress is safe. Let's try again.
+            </p>
+            <button
+              onClick={this.handleRetry}
+              className="px-6 py-3 bg-green-600 text-white font-black rounded-xl hover:bg-green-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 interface LoadingProps {
   message?: string;
@@ -70,7 +79,7 @@ export const LoadingScreen: React.FC<LoadingProps> = ({ message = "Loading..." }
       </svg>
     </div>
     <h2 className="text-xl font-black text-slate-900 tracking-tight">Mzansi Tutor</h2>
-    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Special welcome to our Grade 10s!</p>
+    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Your CAPS Study Buddy 🇿🇦</p>
     <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-1 italic">{message}</p>
     <div className="mt-8 animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 opacity-20"></div>
   </div>
