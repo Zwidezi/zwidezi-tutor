@@ -169,10 +169,7 @@ const App: React.FC = () => {
 
   const handleConfirm = async () => {
     if (!user || !activeSession) return;
-    if (user.plan === 'free' && user.stats.messagesSent >= user.stats.dailyLimit) {
-      setView('upgrade');
-      return;
-    }
+    // Everyone is free
 
     try {
       await createSession(activeSession.sessionId, {
@@ -202,10 +199,7 @@ const App: React.FC = () => {
 
   const handleSendMessage = async (text: string, image?: string) => {
     if (!text.trim() || !tutorRef.current || !user) return;
-    if (user.plan === 'free' && user.stats.messagesSent >= user.stats.dailyLimit) {
-      setView('upgrade');
-      return;
-    }
+    // Everyone is free
 
     const userMessage: Message = { role: 'user', content: text, image };
     setMessages(prev => [...prev, userMessage]);
@@ -309,7 +303,7 @@ const App: React.FC = () => {
                 <button onClick={() => setView('profile')} className="w-10 h-10 bg-white shadow-sm rounded-full flex items-center justify-center text-green-600 font-black border border-slate-100 uppercase transition-all hover:scale-110 active:scale-95">{user?.name.charAt(0)}</button>
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">{user?.name}</span>
-                  {user?.plan === 'pro' && <span className="text-[7px] font-black text-yellow-600 uppercase tracking-widest bg-yellow-50 px-1 rounded inline-block w-fit">PRO LEARNER</span>}
+                  <span className="text-[7px] font-black text-green-600 uppercase tracking-widest bg-green-50 px-1 rounded inline-block w-fit">STUDYING FREE</span>
                 </div>
               </div>
               <div className="flex items-center gap-4">

@@ -20,7 +20,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:text-green-600 dark:hover:text-green-400 transition-colors">Features</a>
-            <a href="#pricing" className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:text-green-600 dark:hover:text-green-400 transition-colors">Pricing</a>
             <button 
               onClick={onStart}
               className="px-6 py-3 bg-green-600 text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-lg shadow-green-100 dark:shadow-none hover:bg-green-700 transition-all hover:scale-105 active:scale-95"
@@ -47,11 +46,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             </span>
             <h1 className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white tracking-tighter mb-8 leading-[0.9]">
               Master the <span className="text-green-600 dark:text-green-400">CAPS</span> <br /> 
-              Curriculum with AI.
+              Curriculum for <span className="text-indigo-600">Free.</span>
             </h1>
             <p className="max-w-2xl mx-auto text-lg md:text-xl font-medium text-slate-600 dark:text-slate-400 leading-relaxed mb-12">
-              Personalized tutoring, past papers, and interactive quizzes for Grade 10-12 learners. 
-              Get help in Mathematics, Science, and more—24/7.
+              Get full access to personalized tutoring, past papers, and study guides. 
+              Open to all South African learners—no subscription needed.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button 
