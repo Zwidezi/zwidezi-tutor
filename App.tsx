@@ -11,6 +11,8 @@ import { LandingPage } from './components/LandingPage.tsx';
 import { ProfileDashboard } from './components/ProfileDashboard.tsx';
 import { ResourceLibrary } from './components/ResourceLibrary.tsx';
 import { OnboardingModal } from './components/OnboardingModal.tsx';
+import { TeacherDashboard } from './components/TeacherDashboard.tsx';
+import { TRANSLATIONS, Language } from './data/translations.ts';
 import { Toaster, toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -44,6 +46,8 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('darkMode');
     return saved === 'true' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
   });
+  const [language, setLanguage] = useState<Language>((localStorage.getItem('language') as Language) || 'en');
+  const t = TRANSLATIONS[language];
   const tutorRef = useRef<TutorService | null>(null);
 
   useEffect(() => {
@@ -54,6 +58,10 @@ const App: React.FC = () => {
     }
     localStorage.setItem('darkMode', isDarkMode.toString());
   }, [isDarkMode]);
+
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
 
   // Only subscribe to users collection if the current user is an admin
   // Normal users don't have permission to read the entire users collection
@@ -191,21 +199,21 @@ const App: React.FC = () => {
     }
   };
 
-  const handleSendMessage = async (text: string) => {
+  const handleSendMessage = async (text: string, image?: string) => {
     if (!text.trim() || !tutorRef.current || !user) return;
     if (user.plan === 'free' && user.stats.messagesSent >= user.stats.dailyLimit) {
       setView('upgrade');
       return;
     }
 
-    const userMessage = { role: 'user', content: text };
+    const userMessage: Message = { role: 'user', content: text, image };
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
 
     try {
       let fullResponse = '';
       setMessages(prev => [...prev, { role: 'model', content: '' }]);
-      const stream = tutorRef.current.sendMessageStream(text);
+      const stream = tutorRef.current.sendMessageStream(text, image);
       for await (const chunk of stream) {
         fullResponse += chunk;
         setMessages(prev => {
@@ -259,6 +267,18 @@ const App: React.FC = () => {
     } finally { setIsTyping(false); }
   };
 
+  const handleUpdateMastery = async (topicId: string, percentage: number) => {
+    if (!user) return;
+    try {
+      const currentMastery = user.stats.mastery?.[topicId] || 0;
+      if (percentage <= currentMastery) return;
+      const newMastery = { ...(user.stats.mastery || {}), [topicId]: percentage };
+      await updateDoc(doc(db, "users", user.id), { "stats.mastery": newMastery });
+      setUser({ ...user, stats: { ...user.stats, mastery: newMastery } });
+      if (percentage === 100) toast.success("Topic Mastered! 🎓", { icon: '🏆' });
+    } catch (err) { console.error("Failed to update mastery:", err); }
+  };
+
   if (isInitializing) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
       <div className="w-20 h-20 bg-green-600 rounded-[2rem] flex items-center justify-center text-white mb-6 animate-pulse-soft shadow-xl shadow-green-100">
@@ -299,9 +319,19 @@ const App: React.FC = () => {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                   )}
                 </button>
-                <button onClick={() => setView('library')} className="text-[9px] font-black text-green-600 uppercase tracking-widest hover:opacity-70">Library</button>
-                {user?.role === 'admin' && <button onClick={() => setView('admin')} className="text-[9px] font-black text-blue-600 uppercase tracking-widest hover:opacity-70">Admin</button>}
-                <button onClick={handleLogout} className="text-[9px] font-black text-slate-400 uppercase tracking-widest hover:text-red-500 transition-colors">Logout</button>
+                <select 
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as Language)}
+                  className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl px-2 py-1 text-[9px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 outline-none cursor-pointer"
+                >
+                  <option value="en">EN</option>
+                  <option value="zu">ZU</option>
+                  <option value="af">AF</option>
+                </select>
+                <button onClick={() => setView('library')} className="text-[9px] font-black text-green-600 uppercase tracking-widest hover:opacity-70">{t.library}</button>
+                <button onClick={() => setView('teacher')} className="text-[9px] font-black text-blue-600 uppercase tracking-widest hover:opacity-70">{t.parent_portal}</button>
+                {user?.role === 'admin' && <button onClick={() => setView('admin')} className="text-[9px] font-black text-red-600 uppercase tracking-widest hover:opacity-70">Admin</button>}
+                <button onClick={handleLogout} className="text-[9px] font-black text-slate-400 uppercase tracking-widest hover:text-red-500 transition-colors">{t.logout}</button>
               </div>
             </div>
             <SubjectPicker onSelect={handleSelect} initialGrade={activeSession?.grade} initialSubject={activeSession?.subject} />
@@ -325,8 +355,9 @@ const App: React.FC = () => {
       )}
       {view === 'confirmation' && activeSession && <div className="min-h-screen flex items-center justify-center p-4"><SessionConfirmation grade={activeSession.grade} subject={activeSession.subject} waSync={{ enabled: activeSession.whatsappSync, phoneNumber: activeSession.phoneNumber || '' }} onConfirm={handleConfirm} onCancel={() => setView('picker')} /></div>}
       {view === 'upgrade' && user && <div className="min-h-screen flex items-center justify-center p-4"><UpgradeScreen user={user} onBack={() => setView('picker')} onUpgrade={() => { window.open('https://wa.me/27000000000?text=' + encodeURIComponent(`Hi! I'd like to upgrade to Mzansi Tutor Pro.\nName: ${user.name}\nEmail: ${user.email}`), '_blank'); }} /></div>}
-      {view === 'study' && activeSession && <StudyPage grade={activeSession.grade} subject={activeSession.subject} messages={messages} isTyping={isTyping} onSendMessage={handleSendMessage} onBack={() => setView('picker')} whatsappSync={{ enabled: activeSession.whatsappSync, phoneNumber: activeSession.phoneNumber || '' }} user={user} />}
+      {view === 'study' && activeSession && <StudyPage grade={activeSession.grade} subject={activeSession.subject} messages={messages} isTyping={isTyping} onSendMessage={handleSendMessage} onBack={() => setView('picker')} whatsappSync={{ enabled: activeSession.whatsappSync, phoneNumber: activeSession.phoneNumber || '' }} user={user} language={language} onUpdateMastery={handleUpdateMastery} />}
       {view === 'profile' && user && <ProfileDashboard user={user} onBack={() => setView('picker')} />}
+      {view === 'teacher' && user && <TeacherDashboard user={user} onBack={() => setView('picker')} />}
 
       <AnimatePresence>
         {showOnboarding && user && (

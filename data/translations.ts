@@ -1,0 +1,61 @@
+export type Language = 'en' | 'zu' | 'af';
+
+export const TRANSLATIONS: Record<Language, any> = {
+  en: {
+    welcome: "Welcome back",
+    study_hub: "Study Hub",
+    tutor: "Tutor",
+    parent_portal: "Parent Portal",
+    library: "Library",
+    start_studying: "Start Studying",
+    ask_anything: "Ask me anything about CAPS...",
+    thinking: "Sharp learner thinking...",
+    limit_reached: "Daily limit reached...",
+    back: "Back",
+    logout: "Logout",
+    upgrade: "Upgrade to Pro",
+    results: "Results",
+    search_placeholder: "Search topics, formulas, concepts...",
+    nsc_countdown: "NSC Countdown",
+    career_path: "Career Path",
+    check_aps: "Check Your APS"
+  },
+  zu: {
+    welcome: "Wamkelekile futhi",
+    study_hub: "Isikhungo Sokufunda",
+    tutor: "Umfundisi",
+    parent_portal: "Ingosi Yabazali",
+    library: "Ilabhulali",
+    start_studying: "Qala Ukufunda",
+    ask_anything: "Ngibuze noma yini nge-CAPS...",
+    thinking: "Umfundi ohlakaniphile uyacabanga...",
+    limit_reached: "Umkhawulo wosuku ufinyelelwe...",
+    back: "Emuva",
+    logout: "Phuma",
+    upgrade: "Thuthukela ku-Pro",
+    results: "Imiphumela",
+    search_placeholder: "Sesha izihloko, amafomula...",
+    nsc_countdown: "Ukubalwa kwe-NSC",
+    career_path: "Indlela Yomsebenzi",
+    check_aps: "Hlola i-APS yakho"
+  },
+  af: {
+    welcome: "Welkom terug",
+    study_hub: "Studie Hub",
+    tutor: "Tutor",
+    parent_portal: "Ouerportaal",
+    library: "Biblioteek",
+    start_studying: "Begin Studeer",
+    ask_anything: "Vra my enigiets oor CAPS...",
+    thinking: "Slim leerder dink...",
+    limit_reached: "Daaglikse limiet bereik...",
+    back: "Terug",
+    logout: "Teken uit",
+    upgrade: "Gradeer op na Pro",
+    results: "Resultate",
+    search_placeholder: "Soek onderwerpe, formules...",
+    nsc_countdown: "NSC Aftelling",
+    career_path: "Loopbaanpad",
+    check_aps: "Gaan jou APS na"
+  }
+};

@@ -49,8 +49,19 @@ export class TutorService {
     return `Hi Sharp Learner! 👋 I am your CAPS tutor for Grade ${grade} ${subject}. I'm ready to help you smash your exams. Which topic would you like to tackle today?`;
   }
 
-  async *sendMessageStream(message: string) {
-    this.messages.push({ role: "user", content: message });
+  async *sendMessageStream(message: string, base64Image?: string) {
+    const userMessage: any = { role: "user" };
+    
+    if (base64Image) {
+      userMessage.content = [
+        { type: "text", text: message },
+        { type: "image_url", image_url: { url: base64Image } }
+      ];
+    } else {
+      userMessage.content = message;
+    }
+
+    this.messages.push(userMessage);
 
     const response = await fetch(
       `https://api.minimax.io/v1/text/chatcompletion_v2?GroupId=${import.meta.env.VITE_MINIMAX_GROUP_ID}`,
@@ -61,7 +72,7 @@ export class TutorService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "MiniMax-M2.5",
+          model: base64Image ? "abab6.5s-chat" : "MiniMax-M2.5", // Use vision-capable model if image present
           messages: this.messages,
           stream: true,
         }),

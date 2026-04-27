@@ -83,6 +83,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           )}
         </div>
         <div className="text-sm md:text-base">
+          {message.image && (
+            <div className="mb-4 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-700 shadow-sm">
+              <img src={message.image} alt="Learner upload" className="w-full h-auto max-h-[300px] object-contain bg-slate-50 dark:bg-slate-900" />
+            </div>
+          )}
           {formatContent(message.content)}
         </div>
         {isFlagged && (

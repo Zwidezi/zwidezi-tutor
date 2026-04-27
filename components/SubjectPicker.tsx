@@ -48,6 +48,7 @@ export const SubjectPicker: React.FC<SubjectPickerProps> = ({
   const [selectedSubject, setSelectedSubject] = React.useState<Subject | null>(initialSubject || null);
   const [waEnabled, setWaEnabled] = React.useState<boolean>(initialWaSync?.enabled ?? true);
   const [phoneNumber, setPhoneNumber] = React.useState(initialWaSync?.phoneNumber || '');
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [showError, setShowError] = React.useState(false);
 
   const normalized = normalizeSAPhone(phoneNumber);
@@ -57,6 +58,10 @@ export const SubjectPicker: React.FC<SubjectPickerProps> = ({
   const isPhoneValid = normalized.length >= 11;
 
   const isFormComplete = isGradeSelected && isSubjectSelected && isPhoneValid;
+
+  const filteredSubjects = SUBJECTS.filter(s => 
+    s.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleSubmit = () => {
     if (!isGradeSelected || !isSubjectSelected || !phoneNumber.trim()) {
@@ -126,8 +131,18 @@ export const SubjectPicker: React.FC<SubjectPickerProps> = ({
           <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 mb-4 text-center uppercase tracking-[0.2em]">
             2. Choose Subject {selectedSubject && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-green-600 dark:text-green-400 ml-1">✓</motion.span>}
           </label>
-          <div className="grid grid-cols-2 gap-3">
-            {SUBJECTS.map((subject, i) => (
+          <div className="relative mb-6">
+            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <input 
+              type="text" 
+              placeholder="Search subjects (e.g. Maths, Science)..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-slate-800 dark:text-white outline-none focus:border-green-500 transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-sm"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+            {filteredSubjects.map((subject, i) => (
               <motion.button
                 key={subject}
                 initial={{ opacity: 0, x: -10 }}

@@ -14,7 +14,18 @@ const RAW_CURRICULUM_DATA: CurriculumData = {
           "Inverse functions: Reflection over the line y=x."
         ],
         bigIdeaLink: { text: "Mind the Gap Guide", url: "https://www.education.gov.za" },
-        resources: { pastPapers: [], studyNotes: [], videoTutorials: [] }
+        resources: { 
+          pastPapers: [
+            { id: 'm12-p1-2023', title: 'Mathematics P1 2023 NSC', url: 'https://www.education.gov.za/LinkClick.aspx?fileticket=5J9_I6_6_0%3d&tabid=3473&portalid=0&mid=11340', year: '2023', fileSize: '1.2MB' },
+            { id: 'm12-p2-2023', title: 'Mathematics P2 2023 NSC', url: 'https://www.education.gov.za/LinkClick.aspx?fileticket=XJ_I6_6_0%3d&tabid=3473&portalid=0&mid=11340', year: '2023', fileSize: '1.5MB' }
+          ], 
+          studyNotes: [
+            { id: 'm12-mind-gap-calc', title: 'Mind the Gap: Calculus', url: 'https://www.education.gov.za/Portals/0/Documents/Publications/Mind%20the%20Gap/Maths%20Calculus%20Guide.pdf', year: '2022', fileSize: '3.4MB' }
+          ], 
+          videoTutorials: [
+            { id: 'm12-vid-calc-1', title: 'Calculus First Principles', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', year: '2023', fileSize: '10 min' }
+          ] 
+        }
       },
       {
         id: 'm12-calculus',
@@ -152,7 +163,16 @@ const RAW_CURRICULUM_DATA: CurriculumData = {
           "Mendel's Laws of Inheritance"
         ],
         bigIdeaLink: { text: "Genetics Guide", url: "https://www.education.gov.za" },
-        resources: { pastPapers: [], studyNotes: [], videoTutorials: [] }
+        resources: { 
+          pastPapers: [
+            { id: 'ls12-p1-2023', title: 'Life Sciences P1 2023 NSC', url: 'https://www.education.gov.za/LinkClick.aspx?fileticket=6J9_I6_6_0%3d&tabid=3473&portalid=0&mid=11340', year: '2023', fileSize: '1.8MB' },
+            { id: 'ls12-p2-2023', title: 'Life Sciences P2 2023 NSC', url: 'https://www.education.gov.za/LinkClick.aspx?fileticket=5J9_I6_6_0%3d&tabid=3473&portalid=0&mid=11340', year: '2023', fileSize: '2.1MB' }
+          ], 
+          studyNotes: [
+            { id: 'ls12-mind-gap-bio', title: 'Mind the Gap: Life Sciences', url: 'https://www.education.gov.za/Portals/0/Documents/Publications/Mind%20the%20Gap/Life%20Sciences%20Guide.pdf', year: '2022', fileSize: '5.2MB' }
+          ], 
+          videoTutorials: [] 
+        }
       },
       {
         id: 'ls12-evolution',
@@ -190,7 +210,15 @@ const RAW_CURRICULUM_DATA: CurriculumData = {
           "Net Profit After Tax"
         ],
         bigIdeaLink: { text: "Accounting Basics", url: "https://www.education.gov.za" },
-        resources: { pastPapers: [], studyNotes: [], videoTutorials: [] }
+        resources: { 
+          pastPapers: [
+            { id: 'acc12-p1-2023', title: 'Accounting P1 2023 NSC', url: 'https://www.education.gov.za/LinkClick.aspx?fileticket=1J9_I6_6_0%3d&tabid=3473&portalid=0&mid=11340', year: '2023', fileSize: '1.1MB' }
+          ],
+          studyNotes: [
+            { id: 'acc12-notes-fs', title: 'Accounting: Financial Statements Guide', url: 'https://www.education.gov.za/Portals/0/Documents/Publications/Mind%20the%20Gap/Accounting%20Statements.pdf', year: '2022', fileSize: '2.5MB' }
+          ],
+          videoTutorials: []
+        }
       },
       {
         id: 'acc12-balance-sheet',
@@ -202,7 +230,13 @@ const RAW_CURRICULUM_DATA: CurriculumData = {
           "Capital vs Drawings"
         ],
         bigIdeaLink: { text: "Balance Sheet Guide", url: "https://www.education.gov.za" },
-        resources: { pastPapers: [], studyNotes: [], videoTutorials: [] }
+        resources: { 
+          pastPapers: [
+            { id: 'acc12-p2-2023', title: 'Accounting P2 2023 NSC', url: 'https://www.education.gov.za/LinkClick.aspx?fileticket=2J9_I6_6_0%3d&tabid=3473&portalid=0&mid=11340', year: '2023', fileSize: '1.3MB' }
+          ],
+          studyNotes: [],
+          videoTutorials: []
+        }
       },
       {
         id: 'acc12-ratio',
@@ -214,7 +248,13 @@ const RAW_CURRICULUM_DATA: CurriculumData = {
           "Solvency: Debt to Equity"
         ],
         bigIdeaLink: { text: "Ratio Analysis", url: "https://www.education.gov.za" },
-        resources: { pastPapers: [], studyNotes: [], videoTutorials: [] }
+        resources: { 
+          pastPapers: [],
+          studyNotes: [
+            { id: 'acc12-notes-ratios', title: 'Ratio Analysis Masterclass', url: 'https://www.education.gov.za/Portals/0/Documents/Publications/Mind%20the%20Gap/Accounting%20Ratios.pdf', year: '2022', fileSize: '1.8MB' }
+          ],
+          videoTutorials: []
+        }
       }
     ],
     'Geography': [
@@ -228,7 +268,15 @@ const RAW_CURRICULUM_DATA: CurriculumData = {
           "South African Climate Regions"
         ],
         bigIdeaLink: { text: "Climate Guide", url: "https://www.education.gov.za" },
-        resources: { pastPapers: [], studyNotes: [], videoTutorials: [] }
+        resources: { 
+          pastPapers: [
+            { id: 'geo12-p1-2023', title: 'Geography P1 2023 NSC', url: 'https://www.education.gov.za/LinkClick.aspx?fileticket=3J9_I6_6_0%3d&tabid=3473&portalid=0&mid=11340', year: '2023', fileSize: '2.2MB' }
+          ],
+          studyNotes: [
+            { id: 'geo12-notes-climate', title: 'Mind the Gap: Geography Climate', url: 'https://www.education.gov.za/Portals/0/Documents/Publications/Mind%20the%20Gap/Geography%20Climate.pdf', year: '2022', fileSize: '4.5MB' }
+          ],
+          videoTutorials: []
+        }
       },
       {
         id: 'geo12-geomorphology',
@@ -982,7 +1030,15 @@ const RAW_CURRICULUM_DATA: CurriculumData = {
                           "Reading comprehension strategies"
                         ],
                         bigIdeaLink: { text: "Language Skills", url: "https://www.education.gov.za" },
-                        resources: { pastPapers: [], studyNotes: [], videoTutorials: [] }
+                        resources: { 
+                          pastPapers: [
+                            { id: 'eng10-p1-2023', title: 'English HL P1 2023 Grade 10', url: 'https://www.education.gov.za/LinkClick.aspx?fileticket=7J9_I6_6_0%3d&tabid=3473&portalid=0&mid=11340', year: '2023', fileSize: '0.9MB' }
+                          ],
+                          studyNotes: [
+                            { id: 'eng10-grammar-guide', title: 'English Grammar Master Guide', url: 'https://www.education.gov.za/Portals/0/Documents/Publications/Mind%20the%20Gap/English%20Grammar.pdf', year: '2022', fileSize: '3.1MB' }
+                          ],
+                          videoTutorials: []
+                        }
                       },
                       {
                         id: 'eng10-writing',

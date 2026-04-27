@@ -12,19 +12,24 @@ import { ResourceViewer } from './ResourceViewer.tsx';
 import { VideoPlayer } from './VideoPlayer.tsx';
 import { InteractivePaper } from './InteractivePaper.tsx';
 import { ApsCalculator } from './ApsCalculator.tsx';
+import { CareerExplorer } from './CareerExplorer.tsx';
+import { TRANSLATIONS, Language } from '../data/translations.ts';
 import { motion, AnimatePresence } from 'framer-motion';
+import { WhatsAppService } from '../services/whatsappService.ts';
 
 interface StudyPageProps {
   grade: Grade;
   subject: Subject;
   messages: Message[];
   isTyping: boolean;
-  onSendMessage: (text: string) => void;
+  onSendMessage: (text: string, image?: string) => void;
   onBack: () => void;
   whatsappSync?: WhatsAppSync;
   sessionId?: string;
   waError?: string | null;
   user?: User | null;
+  language?: string;
+  onUpdateMastery?: (topicId: string, percentage: number) => void;
 }
 
 const MOTIVATION = [
@@ -41,7 +46,9 @@ const TopicCard: React.FC<{
   onViewResource: (resource: Resource) => void;
   onViewPastPaper: (resource: Resource) => void;
   onViewVideo: (resource: Resource) => void;
-}> = ({ topic, onWhatsAppAction, onViewResource, onViewPastPaper, onViewVideo }) => {
+  onUpdateMastery?: (topicId: string, percentage: number) => void;
+  mastery?: number;
+}> = ({ topic, onWhatsAppAction, onViewResource, onViewPastPaper, onViewVideo, onUpdateMastery, mastery = 0 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -62,10 +69,20 @@ const TopicCard: React.FC<{
           </motion.div>
           <div>
             <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 tracking-tight">{topic.title}</h3>
-            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-              CAPS MODULE READY
-            </p>
+            <div className="flex items-center gap-3 mt-0.5">
+              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                CAPS MODULE READY
+              </p>
+              {mastery > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <div className="w-20 h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-green-500" style={{ width: `${mastery}%` }} />
+                  </div>
+                  <span className="text-[10px] font-black text-green-600 dark:text-green-400">{mastery}%</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <motion.div 
@@ -157,6 +174,34 @@ const TopicCard: React.FC<{
                   </div>
                 </div>
               </div>
+
+              {onUpdateMastery && (
+                <div className="mt-8 pt-6 border-t border-slate-50 dark:border-slate-700 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-xl ${mastery === 100 ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'}`}>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-tight">Mastery Goal</p>
+                      <p className="text-[10px] font-bold text-slate-400">Mark module as completed</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUpdateMastery(topic.id, 100);
+                    }}
+                    disabled={mastery === 100}
+                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                      mastery === 100 
+                        ? 'bg-green-500 text-white shadow-lg' 
+                        : 'bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 text-slate-400 hover:border-green-500 hover:text-green-600'
+                    }`}
+                  >
+                    {mastery === 100 ? 'Mastered!' : 'Mark Completed'}
+                  </button>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -166,8 +211,9 @@ const TopicCard: React.FC<{
 };
 
 export const StudyPage: React.FC<StudyPageProps> = ({
-  grade, subject, messages, isTyping, onSendMessage, onBack, whatsappSync, sessionId, waError, user
+  grade, subject, messages, isTyping, onSendMessage, onBack, whatsappSync, sessionId, waError, user, language = 'en'
 }) => {
+  const t = TRANSLATIONS[language as Language] || TRANSLATIONS.en;
   const [activeMode, setActiveMode] = useState<'hub' | 'tutor'>('hub');
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [quoteIdx, setQuoteIdx] = useState(0);
@@ -175,8 +221,27 @@ export const StudyPage: React.FC<StudyPageProps> = ({
   const [activeResource, setActiveResource] = useState<Resource | null>(null);
   const [activePastPaper, setActivePastPaper] = useState<Resource | null>(null);
   const [activeVideo, setActiveVideo] = useState<Resource | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [showApsCalculator, setShowApsCalculator] = useState(false);
+  const [showCareerExplorer, setShowCareerExplorer] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [examCountdown, setExamCountdown] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const examDate = new Date('2024-10-21T09:00:00'); // NSC 2024 Starts
+    const timer = setInterval(() => {
+      const now = new Date();
+      const diff = examDate.getTime() - now.getTime();
+      if (diff < 0) {
+        setExamCountdown('Finals have started!');
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      setExamCountdown(`${days}d ${hours}h until Finals`);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -194,10 +259,21 @@ export const StudyPage: React.FC<StudyPageProps> = ({
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   useEffect(() => { if (activeMode === 'tutor') scrollToBottom(); }, [messages, isTyping, activeMode]);
 
+  const waService = whatsappSync?.enabled && whatsappSync.phoneNumber 
+    ? new WhatsAppService(whatsappSync.phoneNumber) 
+    : null;
+
   const handleWhatsAppAction = (type: 'pdf' | 'formula' | 'quiz', topic: Topic) => {
-    const cleanNumber = whatsappSync?.enabled ? whatsappSync.phoneNumber.replace(/\D/g, '') : '';
-    const message = `*Mzansi Tutor Resource Request*\n\nGrade: ${grade}\nSubject: ${subject}\nTopic: ${topic.title}\nRequest: ${type.toUpperCase()}\n\nRef: ${sessionId || 'MzansiTutor'}`;
-    window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    if (!waService) {
+      toast.error("WhatsApp Sync not active. Enable it in settings!");
+      return;
+    }
+
+    switch (type) {
+      case 'pdf': waService.requestPdfGuide(topic); break;
+      case 'formula': waService.requestFormulaSheet(topic); break;
+      case 'quiz': waService.requestQuiz(topic); break;
+    }
   };
 
   const startVoice = async () => {
@@ -276,6 +352,23 @@ export const StudyPage: React.FC<StudyPageProps> = ({
     audioContextRef.current?.close();
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSend = (text: string) => {
+    onSendMessage(text, selectedImage || undefined);
+    setSelectedImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const usagePercent = user ? (user.stats.messagesSent / (user.stats.dailyLimit || 1)) * 100 : 0;
   const isLimitReached = user?.plan === 'free' && user?.stats.messagesSent >= user?.stats.dailyLimit;
   const topics = CURRICULUM_DATA[grade]?.[subject] || [];
@@ -289,6 +382,7 @@ export const StudyPage: React.FC<StudyPageProps> = ({
   return (
     <div className="flex flex-col h-screen bg-[#f8fafc] dark:bg-slate-900 font-sans overflow-hidden transition-colors duration-500">
       {showApsCalculator && <ApsCalculator onClose={() => setShowApsCalculator(false)} />}
+      {showCareerExplorer && user && <CareerExplorer user={user} onClose={() => setShowCareerExplorer(false)} currentAps={32} />}
       <InteractivePaper resource={activePastPaper} grade={grade} subject={subject} onClose={() => setActivePastPaper(null)} />
       <ResourceViewer resource={activeResource} onClose={() => setActiveResource(null)} />
       <VideoPlayer video={activeVideo} onClose={() => setActiveVideo(null)} />
@@ -318,13 +412,18 @@ export const StudyPage: React.FC<StudyPageProps> = ({
             <span className="text-[10px] font-black uppercase tracking-widest">APS Calc</span>
           </button>
 
+          <button onClick={() => setShowCareerExplorer(true)} className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 transition-colors border border-indigo-100/50 dark:border-indigo-800/50">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            <span className="text-[10px] font-black uppercase tracking-widest">Careers</span>
+          </button>
+
           <nav className="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-2xl border border-slate-200 dark:border-slate-600">
             <button onClick={() => setActiveMode('hub')} className={`px-5 py-2 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest relative z-10 ${activeMode === 'hub' ? 'text-green-700 dark:text-green-400' : 'text-slate-400'}`}>
-              Hub
+              {t.study_hub}
               {activeMode === 'hub' && <motion.div layoutId="mode-pill" className="absolute inset-0 bg-white dark:bg-slate-800 rounded-xl -z-10 shadow-sm" />}
             </button>
             <button onClick={() => setActiveMode('tutor')} className={`px-5 py-2 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest relative z-10 ${activeMode === 'tutor' ? 'text-green-700 dark:text-green-400' : 'text-slate-400'}`}>
-              Tutor
+              {t.tutor}
               {activeMode === 'tutor' && <motion.div layoutId="mode-pill" className="absolute inset-0 bg-white dark:bg-slate-800 rounded-xl -z-10 shadow-sm" />}
             </button>
           </nav>
@@ -346,6 +445,44 @@ export const StudyPage: React.FC<StudyPageProps> = ({
               className="flex-1 overflow-y-auto p-6 md:p-10 scroll-smooth"
             >
               <div className="max-w-4xl mx-auto space-y-8 pb-32">
+                <div className="bg-green-600 text-white py-2 px-4 rounded-xl overflow-hidden relative flex items-center mb-4">
+                  <div className="whitespace-nowrap flex gap-10 animate-marquee font-black text-[9px] uppercase tracking-widest">
+                    <span>📢 NSC 2024 Exam Timetable is now live!</span>
+                    <span>📝 New Mathematics Study Guides added for Grade 12</span>
+                    <span>🏆 Congrats to our top 100 Learners this week!</span>
+                    <span>📅 Final exams start in {examCountdown.split(' ')[0]} days</span>
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row gap-6 mb-8">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex-1 bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">NSC Countdown</p>
+                      <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{examCountdown}</h3>
+                    </div>
+                    <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center animate-pulse">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                  </motion.div>
+
+                  <motion.div 
+                    whileHover={{ scale: 1.02 }}
+                    onClick={() => setShowApsCalculator(true)}
+                    className="flex-1 bg-indigo-600 p-6 rounded-[2.5rem] text-white shadow-lg shadow-indigo-100 dark:shadow-none cursor-pointer flex items-center justify-between group"
+                  >
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">{t.career_path}</p>
+                      <h3 className="text-xl font-black tracking-tight">{t.check_aps}</h3>
+                    </div>
+                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/40 transition-colors">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                    </div>
+                  </motion.div>
+                </div>
+
                 <DailyWarmUp grade={grade} subject={subject} />
 
                 <SyllabusNavigator grade={grade} subject={subject} />
@@ -404,6 +541,8 @@ export const StudyPage: React.FC<StudyPageProps> = ({
                           onViewResource={(res) => setActiveResource(res)}
                           onViewPastPaper={(pp) => setActivePastPaper(pp)}
                           onViewVideo={(vid) => setActiveVideo(vid)}
+                          onUpdateMastery={onUpdateMastery}
+                          mastery={user?.stats.mastery?.[topic.id] || 0}
                         />
                       </motion.div>
                     ))}
@@ -478,7 +617,7 @@ export const StudyPage: React.FC<StudyPageProps> = ({
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                       </div>
-                      <span>Sharp learner thinking...</span>
+                      <span>{t.thinking}</span>
                     </motion.div>
                   )}
                   <div ref={messagesEndRef} />
@@ -495,7 +634,7 @@ export const StudyPage: React.FC<StudyPageProps> = ({
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
                         disabled={isLimitReached} 
-                        onClick={() => action === "Practice question" ? setShowQuiz(true) : onSendMessage(action)} 
+                        onClick={() => action === "Practice question" ? setShowQuiz(true) : handleSend(action)} 
                         className="whitespace-nowrap px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-[9px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-green-600 hover:text-white transition-all disabled:opacity-30"
                       >
                         {action}
@@ -503,10 +642,40 @@ export const StudyPage: React.FC<StudyPageProps> = ({
                     ))}
                   </div>
 
+                  {selectedImage && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-green-500 shadow-lg mb-2"
+                    >
+                      <img src={selectedImage} alt="Preview" className="w-full h-full object-cover" />
+                      <button 
+                        onClick={() => setSelectedImage(null)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                      >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                      </button>
+                    </motion.div>
+                  )}
+
                   <div className="flex items-center gap-3">
+                    <input 
+                      type="file" 
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <button 
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isLimitReached}
+                      className="p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 hover:text-blue-500 hover:border-blue-100 transition-all disabled:opacity-30"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    </button>
                     <div className="relative flex-1">
-                      <textarea rows={1} disabled={isLimitReached} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const val = (e.target as HTMLTextAreaElement).value; if (val.trim()) { onSendMessage(val); (e.target as HTMLTextAreaElement).value = ''; } } }} placeholder={isLimitReached ? "Daily limit reached..." : "Ask me anything about CAPS..."} className="w-full bg-slate-50 dark:bg-slate-900 border-2 border-transparent dark:border-slate-800 rounded-2xl px-6 py-4 pr-12 focus:bg-white dark:focus:bg-slate-800 focus:border-green-500 outline-none font-bold text-slate-800 dark:text-white transition-all resize-none shadow-sm placeholder:text-slate-400" />
-                      <button onClick={(e) => { const t = e.currentTarget.parentElement?.querySelector('textarea') as HTMLTextAreaElement; if (t.value.trim()) { onSendMessage(t.value); t.value = ''; } }} className="absolute right-2 top-2 p-3 bg-green-600 text-white rounded-xl shadow-lg shadow-green-100 dark:shadow-none">
+                      <textarea rows={1} disabled={isLimitReached} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); const val = (e.target as HTMLTextAreaElement).value; if (val.trim() || selectedImage) { handleSend(val || "Explain this image"); (e.target as HTMLTextAreaElement).value = ''; } } }} placeholder={isLimitReached ? t.limit_reached : t.ask_anything} className="w-full bg-slate-50 dark:bg-slate-900 border-2 border-transparent dark:border-slate-800 rounded-2xl px-6 py-4 pr-12 focus:bg-white dark:focus:bg-slate-800 focus:border-green-500 outline-none font-bold text-slate-800 dark:text-white transition-all resize-none shadow-sm placeholder:text-slate-400" />
+                      <button onClick={(e) => { const t = e.currentTarget.parentElement?.querySelector('textarea') as HTMLTextAreaElement; if (t.value.trim() || selectedImage) { handleSend(t.value || "Explain this image"); t.value = ''; } }} className="absolute right-2 top-2 p-3 bg-green-600 text-white rounded-xl shadow-lg shadow-green-100 dark:shadow-none">
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
                       </button>
                     </div>

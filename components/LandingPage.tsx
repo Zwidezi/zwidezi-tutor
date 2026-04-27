@@ -105,9 +105,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
                 color: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400"
               },
               {
-                icon: <ShieldCheck className="w-8 h-8" />,
-                title: "Exam Ready",
-                desc: "Access thousands of past papers and memos from 2018 to 2024. Practice makes perfect.",
+                icon: <Zap className="w-8 h-8" />,
+                title: "Vision AI Tutor",
+                desc: "Snap a photo of your homework or a diagram. Our AI analyzes the image to give you step-by-step guidance instantly.",
                 color: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
               }
             ].map((f, i) => (

@@ -91,6 +91,25 @@ git push -u origin main
 
 ---
 
+## Production Security (PayFast & Firestore)
+
+### 1. Firestore Rules
+Ensure `firestore.rules` is deployed to protect user data:
+```bash
+firebase deploy --only firestore:rules
+```
+
+### 2. PayFast Production Mode
+When switching from Sandbox to Live:
+1.  Change `PAYFAST_MERCHANT_ID` and `PAYFAST_MERCHANT_KEY` in your environment variables.
+2.  Set `PAYFAST_PASSPHRASE` from your PayFast account settings.
+3.  Ensure your `return_url` and `cancel_url` point to your live domain.
+
+### 3. Gemini Vision
+Ensure you have the `abab6.5s-chat` or equivalent multimodal model enabled in your Google AI Studio account.
+
+---
+
 ## Post-Deployment Checklist
 
 - [ ] Test login on live URL
@@ -99,6 +118,10 @@ git push -u origin main
 - [ ] Test quiz functionality
 - [ ] Check mobile responsiveness
 - [ ] Verify all API keys work
+- [ ] **PWA**: Check if "Install App" appears in Chrome/Safari
+- [ ] **Language**: Test switching between English, Zulu, and Afrikaans
+- [ ] **Search**: Verify global subject search works on live site
+- [ ] **Payments**: Test sandbox redirect to PayFast
 
 ## Troubleshooting
 
@@ -125,6 +148,8 @@ npm run build
 ```
 dist/
 ├── index.html
+├── manifest.webmanifest
+├── sw.js
 └── assets/
     ├── index-CLsvF0zX.css
     └── index-*.js

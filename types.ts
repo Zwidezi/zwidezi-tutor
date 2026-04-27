@@ -20,6 +20,7 @@ export type Subject =
 export interface Message {
   role: 'user' | 'model';
   content: string;
+  image?: string;
 }
 
 export interface WhatsAppSync {
@@ -34,6 +35,7 @@ export interface UsageStats {
   streakDays: number;
   lastActive: string;
   badges: string[];
+  mastery: Record<string, number>; // Record<topicId, percentage>
 }
 
 export interface User {
@@ -45,6 +47,7 @@ export interface User {
   joinedAt: string;
   plan: 'free' | 'pro';
   stats: UsageStats;
+  preferredLanguage?: string;
 }
 
 export type SessionStatus = 'started' | 'active' | 'ended';
@@ -65,7 +68,7 @@ export interface LearningSession {
   curriculum: 'CAPS';
 }
 
-export type AppView = 'landing' | 'auth' | 'picker' | 'confirmation' | 'study' | 'upgrade' | 'admin' | 'profile' | 'library';
+export type AppView = 'landing' | 'auth' | 'picker' | 'confirmation' | 'study' | 'upgrade' | 'admin' | 'profile' | 'library' | 'teacher';
 
 export interface Resource {
   id: string;
