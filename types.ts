@@ -68,7 +68,7 @@ export interface LearningSession {
   curriculum: 'CAPS';
 }
 
-export type AppView = 'landing' | 'auth' | 'picker' | 'confirmation' | 'study' | 'upgrade' | 'admin' | 'profile' | 'library' | 'teacher';
+export type AppView = 'landing' | 'auth' | 'picker' | 'confirmation' | 'study' | 'upgrade' | 'admin' | 'profile' | 'library' | 'teacher' | 'timetable';
 
 export interface Resource {
   id: string;

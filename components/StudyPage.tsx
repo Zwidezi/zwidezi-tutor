@@ -13,6 +13,8 @@ import { VideoPlayer } from './VideoPlayer.tsx';
 import { InteractivePaper } from './InteractivePaper.tsx';
 import { ApsCalculator } from './ApsCalculator.tsx';
 import { CareerExplorer } from './CareerExplorer.tsx';
+import { BursaryHub } from './BursaryHub.tsx';
+import { EXAM_TIMETABLE } from '../data/timetable.ts';
 import { TRANSLATIONS, Language } from '../data/translations.ts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WhatsAppService } from '../services/whatsappService.ts';
@@ -223,6 +225,7 @@ export const StudyPage: React.FC<StudyPageProps> = ({
   const [activeVideo, setActiveVideo] = useState<Resource | null>(null);
   const [showApsCalculator, setShowApsCalculator] = useState(false);
   const [showCareerExplorer, setShowCareerExplorer] = useState(false);
+  const [showBursaryHub, setShowBursaryHub] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [examCountdown, setExamCountdown] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -383,6 +386,7 @@ export const StudyPage: React.FC<StudyPageProps> = ({
     <div className="flex flex-col h-screen bg-[#f8fafc] dark:bg-slate-900 font-sans overflow-hidden transition-colors duration-500">
       {showApsCalculator && <ApsCalculator onClose={() => setShowApsCalculator(false)} />}
       {showCareerExplorer && user && <CareerExplorer user={user} onClose={() => setShowCareerExplorer(false)} currentAps={32} />}
+      {showBursaryHub && <BursaryHub onClose={() => setShowBursaryHub(false)} />}
       <InteractivePaper resource={activePastPaper} grade={grade} subject={subject} onClose={() => setActivePastPaper(null)} />
       <ResourceViewer resource={activeResource} onClose={() => setActiveResource(null)} />
       <VideoPlayer video={activeVideo} onClose={() => setActiveVideo(null)} />
@@ -415,6 +419,11 @@ export const StudyPage: React.FC<StudyPageProps> = ({
           <button onClick={() => setShowCareerExplorer(true)} className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 transition-colors border border-indigo-100/50 dark:border-indigo-800/50">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
             <span className="text-[10px] font-black uppercase tracking-widest">Careers</span>
+          </button>
+
+          <button onClick={() => setShowBursaryHub(true)} className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl hover:bg-purple-100 transition-colors border border-purple-100/50 dark:border-purple-800/50">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zM12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" /></svg>
+            <span className="text-[10px] font-black uppercase tracking-widest">Bursaries</span>
           </button>
 
           <nav className="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-2xl border border-slate-200 dark:border-slate-600">
@@ -457,29 +466,67 @@ export const StudyPage: React.FC<StudyPageProps> = ({
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex-1 bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between"
+                    className="flex-1 bg-gradient-to-br from-green-600 to-green-700 rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl relative overflow-hidden group"
                   >
-                    <div>
-                      <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">NSC Countdown</p>
-                      <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{examCountdown}</h3>
-                    </div>
-                    <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl flex items-center justify-center animate-pulse">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="p-3 bg-white/10 rounded-2xl">
+                          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status</p>
+                          <p className="text-sm font-black">Level {Math.floor((user?.stats.totalMessages || 0) / 10) + 1}</p>
+                        </div>
+                      </div>
+                      <h2 className="text-3xl font-black tracking-tight leading-none mb-4">Hello, {user?.name}!</h2>
+                      <p className="text-green-50 font-medium mb-8 leading-relaxed opacity-90">
+                        Ready to master today's topics? Your tutor is standing by.
+                      </p>
+                      <div className="flex gap-3">
+                        <button 
+                          onClick={() => setActiveMode('tutor')}
+                          className="px-6 py-3 bg-white text-green-700 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-50 transition-all shadow-lg"
+                        >
+                          Chat with AI
+                        </button>
+                        <button 
+                          onClick={() => window.open('https://wa.me/27000000000?text=' + encodeURIComponent('Hi! I want to join the Mzansi Study Community.'), '_blank')}
+                          className="px-6 py-3 bg-green-800/30 text-white border border-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-800/50 transition-all"
+                        >
+                          Join Community
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
 
                   <motion.div 
-                    whileHover={{ scale: 1.02 }}
-                    onClick={() => setShowApsCalculator(true)}
-                    className="flex-1 bg-indigo-600 p-6 rounded-[2.5rem] text-white shadow-lg shadow-indigo-100 dark:shadow-none cursor-pointer flex items-center justify-between group"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="w-full md:w-72 bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-700 shadow-xl flex flex-col justify-between"
                   >
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">{t.career_path}</p>
-                      <h3 className="text-xl font-black tracking-tight">{t.check_aps}</h3>
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Exam Date</span>
+                      </div>
+                      {EXAM_TIMETABLE.find(e => e.subject === subject) ? (
+                        <div className="space-y-4">
+                          <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-100 dark:border-red-900/30">
+                            <p className="text-[9px] font-black text-red-600 dark:text-red-400 uppercase tracking-widest">Final Examination</p>
+                            <p className="text-lg font-black text-slate-800 dark:text-white mt-1">{EXAM_TIMETABLE.find(e => e.subject === subject)?.date}</p>
+                            <p className="text-xs font-bold text-slate-500 mt-0.5">{EXAM_TIMETABLE.find(e => e.subject === subject)?.paper} • {EXAM_TIMETABLE.find(e => e.subject === subject)?.time}</p>
+                          </div>
+                          <p className="text-[10px] font-bold text-slate-400 leading-relaxed italic">
+                            "The best way to predict the future is to create it."
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-xs font-bold text-slate-500">Timetable coming soon.</p>
+                      )}
                     </div>
-                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/40 transition-colors">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-                    </div>
+                    <button className="w-full mt-6 py-3 bg-slate-900 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-black transition-all">
+                      Full Timetable
+                    </button>
                   </motion.div>
                 </div>
 
