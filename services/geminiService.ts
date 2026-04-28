@@ -34,12 +34,7 @@ export class TutorService {
   private messages: Message[] = [];
 
   constructor() {
-    if (!import.meta.env.VITE_MINIMAX_API_KEY) {
-      throw new Error("VITE_MINIMAX_API_KEY is not configured. Please set it in your .env.local file.");
-    }
-    if (!import.meta.env.VITE_MINIMAX_GROUP_ID) {
-      throw new Error("VITE_MINIMAX_GROUP_ID is not configured. Please set it in your .env.local file.");
-    }
+    // API keys are now securely handled by the Vercel Edge Function backend.
   }
 
   async startChat(grade: Grade, subject: Subject) {
@@ -64,17 +59,15 @@ export class TutorService {
     this.messages.push(userMessage);
 
     const response = await fetch(
-      `https://api.minimax.io/v1/text/chatcompletion_v2?GroupId=${import.meta.env.VITE_MINIMAX_GROUP_ID}`,
+      `/api/chat`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_MINIMAX_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           model: base64Image ? "abab6.5s-chat" : "MiniMax-M2.5", // Use vision-capable model if image present
           messages: this.messages,
-          stream: true,
         }),
       }
     );
